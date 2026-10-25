@@ -21,6 +21,7 @@ app.use(helmet());
 // CORS configuration restricted to frontend origins
 const allowedOrigins = [
   env.FRONTEND_URL,
+  "https://campus-chain-vote-frontend.onrender.com",
   "http://localhost:5173",
   "http://127.0.0.1:5173",
   "http://localhost:3000",
@@ -29,10 +30,8 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (mobile apps, curl, Postman)
       if (!origin) return callback(null, true);
       if (allowedOrigins.includes(origin)) return callback(null, true);
-      // In development, allow all origins for convenience
       if (process.env.NODE_ENV !== "production") return callback(null, true);
       return callback(new Error(`CORS: origin ${origin} not allowed`));
     },
