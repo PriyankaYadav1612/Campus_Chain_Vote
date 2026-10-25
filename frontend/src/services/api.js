@@ -1,7 +1,4 @@
-const BASE_URL = import.meta.env.VITE_API_URL || 
-  (window.location.hostname === 'campus-chain-vote-frontend.onrender.com'
-    ? 'https://campus-chain-vote-backend.onrender.com/api'
-    : '/api');
+const BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 function getAuthHeader() {
   const token = sessionStorage.getItem('token');
