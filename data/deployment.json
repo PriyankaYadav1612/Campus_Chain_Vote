@@ -1,7 +1,7 @@
 {
-  "address": "0xe970650DC9d7E0909Af7617F36B862dA931B76e9",
-  "network": "localhost",
-  "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-  "relayer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-  "deployedAt": "2026-10-24T15:07:08.865Z"
+  "address": "0x7b35776ef945933E4060a6c7D09295CE7c9F00d1",
+  "network": "sepolia",
+  "deployer": "0x9DbA71206c735cA58d54869a8AdB039711BDd47c",
+  "relayer": "0x9DbA71206c735cA58d54869a8AdB039711BDd47c",
+  "deployedAt": "2026-10-25T15:12:04.152Z"
 }

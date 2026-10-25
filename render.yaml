@@ -1,0 +1,94 @@
+## Render Infrastructure as Code
+## https://render.com/docs/infrastructure-as-code
+##
+## Deploy all services by connecting this repo in Render and applying the Blueprint.
+## See RENDER_DEPLOY.md for step-by-step instructions.
+
+services:
+  # ──────────────────────────────────────────────────
+  # 1. Backend — Node.js / Express API
+  # ──────────────────────────────────────────────────
+  - type: web
+    name: campus-chain-vote-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: node src/server.js
+    healthCheckPath: /api/health
+    plan: free           # change to "starter" or higher for production
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: DEV_MODE
+        value: "false"
+      - key: DEV_SHOW_OTP
+        value: "false"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: campus-chain-vote-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true          # Render auto-generates a secure random value
+      - key: NULLIFIER_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        sync: false                  # Set manually in Render dashboard after frontend deploys
+      # ── Blockchain (Sepolia testnet) ──────────────────
+      - key: RPC_URL
+        sync: false                  # e.g. https://eth-sepolia.g.alchemy.com/v2/<YOUR_KEY>
+      - key: RELAYER_PRIVATE_KEY
+        sync: false                  # Funded Sepolia wallet private key
+      - key: RELAYER_ADDRESS
+        sync: false                  # Address matching RELAYER_PRIVATE_KEY
+      - key: CONTRACT_ADDRESS
+        sync: false                  # Set after deploying CampusVoting.sol to Sepolia
+      # ── Optional Email (SMTP) ─────────────────────────
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_FROM
+        value: "noreply@campus.edu"
+      # ── Optional Twilio SMS ───────────────────────────
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_PHONE_NUMBER
+        sync: false
+
+  # ──────────────────────────────────────────────────
+  # 2. Frontend — React / Vite Static Site
+  # ──────────────────────────────────────────────────
+  - type: web
+    name: campus-chain-vote-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html   # SPA fallback for client-side routing
+    envVars:
+      - key: VITE_API_URL
+        sync: false   # Set to https://<campus-chain-vote-backend>.onrender.com/api
+
+databases:
+  # ──────────────────────────────────────────────────
+  # 3. PostgreSQL Managed Database
+  # ──────────────────────────────────────────────────
+  - name: campus-chain-vote-db
+    plan: free          # change to "starter" or higher for production
+    databaseName: campus_vote
+    user: campus_vote_user
